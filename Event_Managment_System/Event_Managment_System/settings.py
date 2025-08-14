@@ -39,13 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Third-party apps
-    'rest_framework',
-    'rest_framework_simplejwt',
-
-    # Local apps
-    'api',
+    'rest_framework',  # Django REST framework
+    'api',  # Custom app for the event management system
+    
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
