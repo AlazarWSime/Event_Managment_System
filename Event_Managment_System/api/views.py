@@ -1,3 +1,5 @@
+#views.py
+
 from rest_framework import generics, serializers,viewsets, permissions
 from .serializers import RegisterSerializer, EventSerializer, CategorySerializer, OrganizerSerializer, AttendeeSerializer
 from django.contrib.auth import get_user_model

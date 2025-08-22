@@ -1,3 +1,5 @@
+#app/urls.py
+
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import RegisterView, protected_view, OrganizerCreateView, AttendeeCreateView

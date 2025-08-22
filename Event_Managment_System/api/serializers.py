@@ -1,6 +1,8 @@
+#serializers.py
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Event, Category, Organizer, Attendee # import my event and category from models.py
+from .models import Event, Category, Organizer, Attendee, RSVP, EventCategory # import my event and category from models.py
 
 User = get_user_model()
 
@@ -32,14 +34,14 @@ class CategorySerializer(serializers.ModelSerializer):
 #-------------------------
 
 class EventSerializer(serializers.ModelSerializer):
-    organizer = serializers.ReadOnlyField(source='organizer.organization_name')
+    organizer = serializers.ReadOnlyField(source='organizer.organization_name') # read only
     categories = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all()
-    )
+        many=True, queryset=Category.objects.all(), write_only = True
+    ) # write only
 
     class Meta:
         model = Event
-        fields = ['id', 'title', 'description', 'organizer', 'categories', 'start_date', 'end_date']
+        fields = ['id', 'title', 'description', 'location', 'organizer', 'categories', 'start_date', 'end_date', 'created_at', 'updated_at']
 
 
 #-------------------------
@@ -54,14 +56,14 @@ class OrganizerSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'organization_name']
         read_only_fields = ['user']
         extra_kwargs = {
-            'organization': {'required': True}
+            'organization_name': {'required': True}
         }
 
 
 #-------------------------
 # attendies Serializer
 #-------------------------
-
+    
 class AttendeeSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')  # show username instead of just id
 
@@ -73,3 +75,28 @@ class AttendeeSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'company': {'required': False}
         }
+
+#-----------------------------
+# RSVP serializer
+#-----------------------------
+
+class RSVPSerializer(serializers.ModelSerializer):
+    attendee_name = serializers.ReadOnlyField(source='attendee.user.username')
+    event_title = serializers.ReadOnlyField(source='event.title')
+    organizer_name = serializers.ReadOnlyField(source = 'event.organizer.organization_name')
+   
+    class Meta:
+        model = RSVP
+        fields = [
+            'id', 'event', 'event_title', 'attendee', 'attendee_name', 'organizer_name', 'status', 'created_at'
+        ]
+        read_only_fields = ['attendee', 'created_at']
+
+    def validate(self, data):
+        if self.instance is None:
+            event = data.get('event')
+            attendee = data.get('attendee')
+
+            if event and attendee and RSVP.objects.filter(event = event, attendee = attendee).exists():
+                raise serializers.ValidationError("you have already RSVP'd to this event")
+        return data

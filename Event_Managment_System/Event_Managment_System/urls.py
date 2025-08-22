@@ -1,3 +1,5 @@
+#project/urls.py
+
 """
 URL configuration for Event_Managment_System project.
 
