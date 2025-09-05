@@ -24,9 +24,25 @@ class RegisterSerializer(serializers.ModelSerializer):
 # Category Serializer
 #---------------------
 class CategorySerializer(serializers.ModelSerializer):
+    events = serializers.SerializerMethodField()
+    
     class Meta:
         model = Category
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'events']
+    
+    def get_events(self, obj):
+        events = Event.objects.filter(categories=obj)
+        return [
+            {
+                "id": event.id,
+                "title": event.title,
+                "start_date": event.start_date,
+                "end_date": event.end_date,
+                "location": event.location,
+                "organizer": event.organizer.organization_name
+            }
+            for event in events
+        ]
 
 
 #-------------------------
@@ -90,7 +106,7 @@ class RSVPSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'event', 'event_title', 'attendee', 'attendee_name', 'organizer_name', 'status', 'created_at'
         ]
-        read_only_fields = ['attendee', 'created_at']
+        read_only_fields = ['attendee', 'created_at', 'event']
 
     def validate(self, data):
         if self.instance is None:

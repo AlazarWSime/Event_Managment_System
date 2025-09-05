@@ -22,4 +22,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('api.urls')), # Include the API URLs for authentication
+    path("api-auth/", include("rest_framework.urls")), #login/logout in UI
 ]

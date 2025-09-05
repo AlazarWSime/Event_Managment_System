@@ -20,6 +20,7 @@ class Organizer(models.Model):
     bio = models.TextField(blank=True)
 
     def __str__(self):
+
        return f"{self.organization_name} ({self.user.username})"
     
 
@@ -77,3 +78,11 @@ class RSVP(models.Model):
 
     def __str__(self):
         return f"{self.attendee.user.username} -> {self.event.title} ({self.status})"
+    #
+    
+#from django.contrib.auth.models import User
+
+#user = User.objects.get(username="admin")
+#user.is_staff = True       # allows login to Django admin dashboard
+#user.is_superuser = True   # gives full permissions
+#user.save()
