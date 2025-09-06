@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
@@ -88,15 +89,21 @@ SPECTACULAR_SETTINGS = {
         }
     },
 
+
+
     # Optional: lock down doc views (see step 5)
     # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
 }
-
+DEBUG = False
+ALLOWED_HOSTS = ['Alazar47.pythonanywhere.com']
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days= 7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTH_USER_MODEL = 'api.User'
 

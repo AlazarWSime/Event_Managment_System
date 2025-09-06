@@ -135,7 +135,7 @@ class RSVPSerializer(serializers.ModelSerializer):
             if request and request.method == 'POST':
                 event = data.get('event')
                 attendee = request.user.attendee
-                
+
                 if not attendee:
                     raise serializers.ValidationError({
                         "error": "User is not registered as an attendee",
@@ -147,16 +147,11 @@ class RSVPSerializer(serializers.ModelSerializer):
                         "error": "You have already RSVP'd to this event",
                         "code": "duplicate_rsvp"
                     })
-                
-                data['attendee'] = attendee
-                
             return data
-            
         except Exception as e:
-            if not isinstance(e, serializers.ValidationError):
-                raise serializers.ValidationError({
-                    "error": "Validation failed",
-                    "code": "validation_error",
-                    "details": str(e)
-                })
+            raise serializers.ValidationError({
+                "error": "Validation failed",
+                "code": "validation_error",
+                "details": str(e)
+            })
             raise
