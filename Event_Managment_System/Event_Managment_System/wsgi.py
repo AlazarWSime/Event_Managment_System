@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 import os
 import sys
 
-path = '/home/yourusername/your-project-folder'
+path = '/home/Alazar47/Event_Managment_System'
 if path not in sys.path:
     sys.path.append(path)
 
