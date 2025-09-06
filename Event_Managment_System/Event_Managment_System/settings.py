@@ -66,7 +66,21 @@ SPECTACULAR_SETTINGS = {
         'rest_framework.permissions.AllowAny'
     ],
 }
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Events Management API',
+    'DESCRIPTION': 'REST API for events, attendees, organizers with role-based auth (JWT).',
+    'VERSION': '1.0.0',
+    'SERVERS': [
+        {'url': 'https://alazar47.pythonanywhere.com', 'description': 'Production'},
+    ],
+    'SCHEMA_PATH_PREFIX': r'/api',
+    'SECURITY': [{'BearerAuth': []}],
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
+        }
+    },
+}
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Events Management API',
     'DESCRIPTION': 'REST API for events, attendees, organizers with role-based auth (JWT).',
