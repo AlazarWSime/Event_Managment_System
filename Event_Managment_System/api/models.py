@@ -80,9 +80,3 @@ class RSVP(models.Model):
         return f"{self.attendee.user.username} -> {self.event.title} ({self.status})"
     #
     
-#from django.contrib.auth.models import User
-
-#user = User.objects.get(username="admin")
-#user.is_staff = True       # allows login to Django admin dashboard
-#user.is_superuser = True   # gives full permissions
-#user.save()

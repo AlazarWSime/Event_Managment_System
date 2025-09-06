@@ -3,6 +3,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import Event, Category, Organizer, Attendee, RSVP, EventCategory # import my event and category from models.py
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
+
 
 User = get_user_model()
 
@@ -29,7 +31,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'events']
-    
+
     def get_events(self, obj):
         events = Event.objects.filter(categories=obj)
         return [
@@ -91,6 +93,21 @@ class AttendeeSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'company': {'required': False}
         }
+    def validate(self, data):
+        try:
+            user = self.context['request'].user
+            if Attendee.objects.filter(user=user).exists():
+                raise serializers.ValidationError({
+                    "error": "User is already registered as an attendee",
+                    "code": "duplicate_attendee"
+                })
+            return data
+        except Exception as e:
+            raise serializers.ValidationError({
+                "error": "Validation failed",
+                "code": "validation_error",
+                "details": str(e)
+            })
 
 #-----------------------------
 # RSVP serializer
@@ -99,20 +116,47 @@ class AttendeeSerializer(serializers.ModelSerializer):
 class RSVPSerializer(serializers.ModelSerializer):
     attendee_name = serializers.ReadOnlyField(source='attendee.user.username')
     event_title = serializers.ReadOnlyField(source='event.title')
-    organizer_name = serializers.ReadOnlyField(source = 'event.organizer.organization_name')
+    organizer_name = serializers.ReadOnlyField(source='event.organizer.organization_name')
+    
+    event = serializers.PrimaryKeyRelatedField(queryset=Event.objects.all())
+    status = serializers.ChoiceField(choices=RSVP.STATUS_CHOICES)
    
     class Meta:
         model = RSVP
         fields = [
-            'id', 'event', 'event_title', 'attendee', 'attendee_name', 'organizer_name', 'status', 'created_at'
+            'id', 'event', 'event_title', 'attendee', 'attendee_name', 
+            'organizer_name', 'status', 'created_at'
         ]
-        read_only_fields = ['attendee', 'created_at', 'event']
+        read_only_fields = ['attendee', 'created_at']
 
     def validate(self, data):
-        if self.instance is None:
-            event = data.get('event')
-            attendee = data.get('attendee')
-
-            if event and attendee and RSVP.objects.filter(event = event, attendee = attendee).exists():
-                raise serializers.ValidationError("you have already RSVP'd to this event")
-        return data
+        try:
+            request = self.context.get('request')
+            if request and request.method == 'POST':
+                event = data.get('event')
+                attendee = request.user.attendee
+                
+                if not attendee:
+                    raise serializers.ValidationError({
+                        "error": "User is not registered as an attendee",
+                        "code": "not_attendee"
+                    })
+                
+                if RSVP.objects.filter(event=event, attendee=attendee).exists():
+                    raise serializers.ValidationError({
+                        "error": "You have already RSVP'd to this event",
+                        "code": "duplicate_rsvp"
+                    })
+                
+                data['attendee'] = attendee
+                
+            return data
+            
+        except Exception as e:
+            if not isinstance(e, serializers.ValidationError):
+                raise serializers.ValidationError({
+                    "error": "Validation failed",
+                    "code": "validation_error",
+                    "details": str(e)
+                })
+            raise

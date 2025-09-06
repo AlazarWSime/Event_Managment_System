@@ -4,6 +4,10 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import RegisterView, protected_view, OrganizerCreateView, AttendeeCreateView, EventViewSet, CategoryViewSet, RSVPViewSet
 from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from rest_framework.permissions import IsAdminUser, AllowAny
+
+
 
 #router and register viewsets
 router = DefaultRouter()
@@ -11,6 +15,7 @@ router.register(r'events', EventViewSet)# this one is event creating route
 router.register(r'categories', CategoryViewSet)
 router.register(r'rsvps', RSVPViewSet, basename = 'rsvp')
 
+path('protected/', protected_view, name = 'protected'),
 
 urlpatterns = [
     path('users/', RegisterView.as_view(), name='user-register'),
@@ -20,5 +25,6 @@ urlpatterns = [
     path('attendees/', AttendeeCreateView.as_view(), name='attendee-create'),
     path('protected/', protected_view, name = 'protected'),
     path('', include(router.urls)),
+
 ]
 

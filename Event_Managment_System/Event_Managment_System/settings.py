@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,10 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST framework
-    'api',  # Custom app for the event management system
-    
+    'drf_spectacular',
+     
+    'api',  # Custom app for the event management system   
 ]
 REST_FRAMEWORK = {
+    
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',   # 👈 for browser login
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # 👈 for JWT tokens
@@ -53,6 +56,40 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10  # Events per page
+}
+
+SPECTACULAR_SETTINGS = {
+    # ...
+    'SERVE_PERMISSIONS': [
+        'rest_framework.permissions.IsAdminUser' if not settings.DEBUG else
+        'rest_framework.permissions.AllowAny'
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Events Management API',
+    'DESCRIPTION': 'REST API for events, attendees, organizers with role-based auth (JWT).',
+    'VERSION': '1.0.0',
+    # Optional: show the base API root in the server list of the docs
+    'SERVERS': [
+        {'url': 'http://localhost:8000/api/auth', 'description': 'Local Dev'},
+        # add your prod URL when deployed:
+        # {'url': 'https://api.yourdomain.com/api/auth', 'description': 'Production'},
+    ],
+
+    # Prefix so only /api/auth routes are included in the schema (adjust if needed)
+    'SCHEMA_PATH_PREFIX': r'/api/auth',
+
+    # Tell the UI to use Bearer JWT
+    'SECURITY': [{'BearerAuth': []}],
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
+        }
+    },
+
+    # Optional: lock down doc views (see step 5)
+    # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
 }
 
 
