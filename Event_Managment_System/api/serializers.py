@@ -154,4 +154,4 @@ class RSVPSerializer(serializers.ModelSerializer):
                 "code": "validation_error",
                 "details": str(e)
             })
-            raise
+    raise
