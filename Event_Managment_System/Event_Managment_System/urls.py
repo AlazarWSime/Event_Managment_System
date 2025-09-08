@@ -18,17 +18,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import RedirectView
+
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
+    SpectacularRedocView,
 )
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/api/docs/', permanent=False)),
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),  # This includes all your API endpoints
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/auth/', include('api.urls')), # Include the API URLs for authentication
+    path("api-auth/", include("rest_framework.urls")), #login/logout in UI
+
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),  # OpenAPI schema (raw JSON/YAML)
+
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
 ]

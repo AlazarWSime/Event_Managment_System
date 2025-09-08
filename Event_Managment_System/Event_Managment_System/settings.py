@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
+
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
@@ -28,13 +28,7 @@ SECRET_KEY = 'django-insecure-+h&l=jy0z%2j^uk#mo$*)l3795ns80$gn#d*he_8t7=4ljd8o+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']  # Allow all hosts for development
-
-# HTTPS/SSL Settings for development
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = False  # Set to True in production with proper SSL certificate
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -49,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST framework
     'drf_spectacular',
-    'sslserver',  # SSL support for development
+    
      
     'api',  # Custom app for the event management system   
 ]
@@ -73,21 +67,7 @@ SPECTACULAR_SETTINGS = {
         'rest_framework.permissions.AllowAny'
     ],
 }
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Events Management API',
-    'DESCRIPTION': 'REST API for events, attendees, organizers with role-based auth (JWT).',
-    'VERSION': '1.0.0',
-    'SERVERS': [
-        {'url': 'https://alazar47.pythonanywhere.com', 'description': 'Production'},
-    ],
-    'SCHEMA_PATH_PREFIX': r'/api',
-    'SECURITY': [{'BearerAuth': []}],
-    'COMPONENTS': {
-        'securitySchemes': {
-            'BearerAuth': {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'}
-        }
-    },
-}
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Events Management API',
     'DESCRIPTION': 'REST API for events, attendees, organizers with role-based auth (JWT).',
@@ -115,44 +95,14 @@ SPECTACULAR_SETTINGS = {
     # Optional: lock down doc views (see step 5)
     # 'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAdminUser'],
 }
-DEBUG = False
-ALLOWED_HOSTS = ['Alazar47.pythonanywhere.com', 'localhost', '127.0.0.1']
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days= 7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
 }
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
-# Media files (user uploaded content)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Security settings for production
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-# Simplified logging configuration
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
-    },
-}
 
 AUTH_USER_MODEL = 'api.User'
 

@@ -198,6 +198,19 @@ class RSVPViewSet(BaseViewSet):
         
         # Fallback for other users (admin/staff)
         return RSVP.objects.all()
+    def create(self, request, *args, **kwargs):
+        # Ensure the user is an attendee
+        if not hasattr(request.user, 'attendee'):
+            return Response(
+                {
+                    "error": "User is not registered as an attendee",
+                    "code": "not_attendee"
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return super().create(request, *args, **kwargs)
+
 
     def perform_create(self, serializer):
         # The attendee is automatically set in the serializer's validate method
