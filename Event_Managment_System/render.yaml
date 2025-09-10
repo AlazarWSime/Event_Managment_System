@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: event-management-system
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn Event_Managment_System.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: DJANGO_SETTINGS_MODULE
+        value: Event_Managment_System.Event_Managment_System.settings
