@@ -2,7 +2,9 @@ services:
   - type: web
     name: event-management-system
     env: python
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: |
+      pip install -e .
+      pip install -r requirements.txt
     startCommand: "gunicorn Event_Managment_System.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
