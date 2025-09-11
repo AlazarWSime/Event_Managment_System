@@ -44,10 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST framework
     'drf_spectacular',
-    
-     
-    'api',  # Custom app for the event management system   
+    "api",  # Custom app for the event management system   
 ]
+
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (

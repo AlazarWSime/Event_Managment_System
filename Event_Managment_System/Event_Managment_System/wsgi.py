@@ -17,6 +17,6 @@ sys.path.append(str(project_root))
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Event_Managment_System.Event_Managment_System.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Event_Managment_System.settings')
 
 application = get_wsgi_application()

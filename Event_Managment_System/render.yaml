@@ -5,7 +5,7 @@ services:
     buildCommand: |
       pip install -e .
       pip install -r ./requirements.txt
-    startCommand: "gunicorn wsgi:application --chdir ."
+    startCommand: "gunicorn Event_Managment_System.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.6
