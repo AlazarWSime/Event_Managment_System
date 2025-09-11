@@ -13,21 +13,23 @@ from .views import (
 
 # Router and register viewsets
 router = DefaultRouter()
-router.register(r'events', EventViewSet, basename='event')
-router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'events', EventViewSet)  # Event creating route
+router.register(r'categories', CategoryViewSet)
 router.register(r'rsvps', RSVPViewSet, basename='rsvp')
 
 urlpatterns = [
-    # API endpoints
-    path('', include(router.urls)),
-    
-    # Authentication
-    path('register/', RegisterView.as_view(), name='register'),
-    path('organizer/register/', OrganizerCreateView.as_view(), name='organizer-register'),
-    path('attendee/register/', AttendeeCreateView.as_view(), name='attendee-register'),
-    path('protected/', protected_view, name='protected'),
+    # User management
+    path('users/', RegisterView.as_view(), name='user-register'),
+    path('organizers/', OrganizerCreateView.as_view(), name='organizer-create'),
+    path('attendees/', AttendeeCreateView.as_view(), name='attendee-create'),
     
     # JWT Authentication
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Protected route
+    path('protected/', protected_view, name='protected'),
+    
+    # Include router URLs
+    path('', include(router.urls)),
 ]
