@@ -3,8 +3,9 @@ services:
     name: event-management-system
     env: python
     buildCommand: |
-      pip install -e .
+      pip install --upgrade pip
       pip install -r ./requirements.txt
+      python manage.py collectstatic --no-input
     startCommand: "gunicorn Event_Managment_System.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
