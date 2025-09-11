@@ -1,30 +1,33 @@
-#app/urls.py
-
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, protected_view, OrganizerCreateView, AttendeeCreateView, EventViewSet, CategoryViewSet, RSVPViewSet
 from rest_framework.routers import DefaultRouter
-from django.conf import settings
-from rest_framework.permissions import IsAdminUser, AllowAny
+from .views import (
+    RegisterView, 
+    protected_view, 
+    OrganizerCreateView, 
+    AttendeeCreateView, 
+    EventViewSet, 
+    CategoryViewSet, 
+    RSVPViewSet
+)
 
-
-
-#router and register viewsets
+# Router and register viewsets
 router = DefaultRouter()
-router.register(r'events', EventViewSet)# this one is event creating route
-router.register(r'categories', CategoryViewSet)
-router.register(r'rsvps', RSVPViewSet, basename = 'rsvp')
-
-path('protected/', protected_view, name = 'protected'),
+router.register(r'events', EventViewSet, basename='event')
+router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'rsvps', RSVPViewSet, basename='rsvp')
 
 urlpatterns = [
-    path('users/', RegisterView.as_view(), name='user-register'),
+    # API endpoints
+    path('', include(router.urls)),
+    
+    # Authentication
+    path('register/', RegisterView.as_view(), name='register'),
+    path('organizer/register/', OrganizerCreateView.as_view(), name='organizer-register'),
+    path('attendee/register/', AttendeeCreateView.as_view(), name='attendee-register'),
+    path('protected/', protected_view, name='protected'),
+    
+    # JWT Authentication
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('organizers/', OrganizerCreateView.as_view(), name='organizer-create'),
-    path('attendees/', AttendeeCreateView.as_view(), name='attendee-create'),
-    path('protected/', protected_view, name = 'protected'),
-    path('', include(router.urls)),
-
 ]
-
