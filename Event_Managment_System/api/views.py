@@ -155,20 +155,62 @@ class AttendeeCreateView(generics.CreateAPIView):
 class AttendeeViewSet(BaseViewSet):
     """
     ViewSet for managing attendees.
+    - Organizers can only see attendees who RSVP'd to their events
+    - Attendees can only see their own profile
+    - Admins can see all attendees
     """
     queryset = Attendee.objects.all()
     serializer_class = AttendeeSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         """
-        Optionally filter attendees by user if 'user' query parameter is provided.
+        Filter attendees based on user role:
+        - Organizers see attendees who RSVP'd to their events
+        - Attendees see only their own profile
+        - Admins see all attendees
         """
         queryset = super().get_queryset()
-        user_id = self.request.query_params.get('user')
-        if user_id:
-            queryset = queryset.filter(user_id=user_id)
+        user = self.request.user
+        
+        # If user is an organizer, show attendees who RSVP'd to their events
+        if hasattr(user, 'organizer'):
+            # Get all events organized by this user
+            organized_events = Event.objects.filter(organizer=user.organizer)
+            # Get all RSVPs for these events and get unique attendees
+            attendee_ids = RSVP.objects.filter(
+                event__in=organized_events
+            ).values_list('attendee', flat=True).distinct()
+            return queryset.filter(id__in=attendee_ids)
+            
+        # If user is an attendee, only show their own profile
+        elif hasattr(user, 'attendee'):
+            return queryset.filter(id=user.attendee.id)
+            
+        # For admins or other authenticated users (fallback)
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new attendee with validation for duplicates.
+        """
+        user = self.request.user
+        
+        # Check if attendee already exists for this user
+        if hasattr(user, 'attendee'):
+            return Response(
+                {
+                    "error": "User is already registered as an attendee",
+                    "code": "duplicate_attendee"
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 #----------------------------------------
 #  ViewSets now inherit from BaseViewSet |
@@ -179,6 +221,12 @@ class EventViewSet(BaseViewSet):  #inherits from BaseViewSet
     
 
     def perform_create(self, serializer):
+    # Check if user is an organizer
+        if not hasattr(self.request.user, 'organizer'):
+            raise DRFValidationError({
+                "error": "User is not registered as an organizer",
+                "code": "not_organizer"
+            })
         organizer = self.request.user.organizer
         serializer.save(organizer=organizer)
         

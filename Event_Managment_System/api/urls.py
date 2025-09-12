@@ -5,7 +5,6 @@ from .views import (
     RegisterView, 
     protected_view, 
     OrganizerCreateView, 
-    AttendeeCreateView, 
     EventViewSet, 
     CategoryViewSet, 
     RSVPViewSet,
@@ -23,7 +22,8 @@ urlpatterns = [
     # User management
     path('users/', RegisterView.as_view(), name='user-register'),
     path('organizers/', OrganizerCreateView.as_view(), name='organizer-create'),
-    path('attendees/', AttendeeCreateView.as_view(), name='attendee-create'),
+    #path('attendees/', AttendeeCreateView.as_view(), name='attendee-create'),
+    path ('', include(router.urls)),
     
     # JWT Authentication
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

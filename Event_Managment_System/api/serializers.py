@@ -102,6 +102,8 @@ class AttendeeSerializer(serializers.ModelSerializer):
                     "code": "duplicate_attendee"
                 })
             return data
+
+            
         except Exception as e:
             raise serializers.ValidationError({
                 "error": "Validation failed",
