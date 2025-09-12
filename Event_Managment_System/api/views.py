@@ -152,7 +152,23 @@ class AttendeeCreateView(generics.CreateAPIView):
             })
         serializer.save(user=user)
 
-
+class AttendeeViewSet(BaseViewSet):
+    """
+    ViewSet for managing attendees.
+    """
+    queryset = Attendee.objects.all()
+    serializer_class = AttendeeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_queryset(self):
+        """
+        Optionally filter attendees by user if 'user' query parameter is provided.
+        """
+        queryset = super().get_queryset()
+        user_id = self.request.query_params.get('user')
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+        return queryset
 
 #----------------------------------------
 #  ViewSets now inherit from BaseViewSet |
@@ -179,6 +195,7 @@ class CategoryViewSet(BaseViewSet):  #inherits from BaseViewSet
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
     pagination_class = None
+
 
 class RSVPViewSet(BaseViewSet):
     serializer_class = RSVPSerializer

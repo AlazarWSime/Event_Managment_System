@@ -8,7 +8,8 @@ from .views import (
     AttendeeCreateView, 
     EventViewSet, 
     CategoryViewSet, 
-    RSVPViewSet
+    RSVPViewSet,
+    AttendeeViewSet
 )
 
 # Router and register viewsets
@@ -16,6 +17,7 @@ router = DefaultRouter()
 router.register(r'events', EventViewSet)  # Event creating route
 router.register(r'categories', CategoryViewSet)
 router.register(r'rsvps', RSVPViewSet, basename='rsvp')
+router.register(r'attendees', AttendeeViewSet, basename='attendee')
 
 urlpatterns = [
     # User management
